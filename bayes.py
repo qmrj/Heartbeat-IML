@@ -2,7 +2,7 @@ import numpy as np
 from scipy.stats import multivariate_normal
 from sklearn.decomposition import PCA
 
-from dataloader import load_train_val_set
+from dataloader import load_train_val_set, load_test_set, save_results
 from metrics import print_metrics
 
 from utils import seed_everything
@@ -49,13 +49,29 @@ C2_dist = multivariate_normal(C2_mean, C2_cov)  # type: ignore
 C3_dist = multivariate_normal(C3_mean, C3_cov)  # type: ignore
 
 
-ours = np.stack(
+ours_val = np.stack(
     (
         C0_dist.pdf(X_val) * C0_prior, C1_dist.pdf(X_val) * C1_prior,
         C2_dist.pdf(X_val) * C2_prior, C3_dist.pdf(X_val) * C3_prior
     ), axis=1
 )
-ours /= ours.sum(axis=1, keepdims=True)
+ours_val /= ours_val.sum(axis=1, keepdims=True)
 
 
-print_metrics(ours, y_val)
+print("Metrics on the validation set:")
+print_metrics(ours_val, y_val)
+
+
+X_test, idx_test = load_test_set()
+
+X_test = pca.transform(X_test)
+
+ours_test = np.stack(
+    (
+        C0_dist.pdf(X_test) * C0_prior, C1_dist.pdf(X_test) * C1_prior,
+        C2_dist.pdf(X_test) * C2_prior, C3_dist.pdf(X_test) * C3_prior
+    ), axis=1
+)
+ours_test /= ours_test.sum(axis=1, keepdims=True)
+
+save_results('./results/bayes.csv', ours_test, idx_test)

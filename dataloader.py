@@ -2,7 +2,9 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 
-from typing import Optional
+import os
+
+from typing import Optional, Any
 from numpy.typing import NDArray
 
 
@@ -40,6 +42,17 @@ def load_test_set() -> tuple[
     X, y, idx = load_dataset('./data/testA.csv')
     assert y is None
     return X, idx
+
+
+def save_results(path: str, probs: NDArray[Any], y_gt: NDArray[Any]) -> None:
+    probs_df = pd.DataFrame(
+        probs, columns=['label_0', 'label_1', 'label_2', 'label_3']
+    )
+    idx_df = pd.DataFrame(y_gt, columns=['id'])
+    df = pd.concat([idx_df, probs_df], axis=1)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    df.to_csv(path, index=False, encoding='utf-8')
+    print(f"Results has been saved to `{path}`")
 
 
 if __name__ == '__main__':
