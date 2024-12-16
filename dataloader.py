@@ -2,53 +2,57 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 import numpy as np
 
-from utils import seed_everything
-
+from typing import Optional
 from numpy.typing import NDArray
 
 
-def load_dataset() -> tuple[NDArray[np.float64], NDArray[np.int64]]:
-    df = pd.read_csv('./data/train.csv')
+def load_dataset(path: str) -> tuple[
+    NDArray[np.float64], Optional[NDArray[np.int64]], NDArray[np.int64]
+]:
+    df = pd.read_csv(path)
 
-    X_ret = []
-    y_ret = []
+    idx_ret = df['id'].to_numpy(dtype=np.int64)
 
-    for i in range(len(df)):
-        item = df.loc[i, 'heartbeat_signals']
-        label = df.loc[i, 'label']
-        idx = df.loc[i, 'id']
+    X_ret = df['heartbeat_signals'].to_numpy()
+    X_ret = np.genfromtxt(X_ret, delimiter=',', dtype=np.float64)
 
-        item = str(item)
-        item = [float(i) for i in item.split(',')]
+    if 'label' in df.keys():
+        y_ret = df['label'].to_numpy(dtype=np.int64)
+    else:
+        y_ret = None
 
-        item = np.array(item)
-        idx = int(label)  # type: ignore
-
-        X_ret.append(item)
-        y_ret.append(idx)
-
-    X_ret = np.stack(X_ret)
-    y_ret = np.stack(y_ret)
-
-    return X_ret, y_ret
+    return X_ret, y_ret, idx_ret
 
 
 def load_train_val_set(**kwargs) -> tuple[
     NDArray[np.float64], NDArray[np.float64],
     NDArray[np.int64], NDArray[np.int64]
 ]:
-    X, y = load_dataset()
+    X, y, _ = load_dataset('./data/train.csv')
+    assert y is not None
     X_train, X_val, y_train, y_val = train_test_split(X, y, **kwargs)
     return X_train, X_val, y_train, y_val
 
 
+def load_test_set() -> tuple[
+    NDArray[np.float64], NDArray[np.int64],
+]:
+    X, y, idx = load_dataset('./data/testA.csv')
+    assert y is None
+    return X, idx
+
+
 if __name__ == '__main__':
+    from utils import seed_everything
+
     SEED = 42
     seed_everything(SEED)
 
     X_train, X_val, y_train, y_val = load_train_val_set(
         test_size=0.2, random_state=SEED
     )
+
+    X_test, idx_test = load_test_set()
 
     print("Training set size:")
     print(X_train.shape)
@@ -57,3 +61,6 @@ if __name__ == '__main__':
     print("Validation set size:")
     print(X_val.shape)
     print(y_val.shape)
+
+    print("Test set size:")
+    print(X_test.shape)

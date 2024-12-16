@@ -14,6 +14,7 @@ X_train, X_val, y_train, y_val = load_train_val_set(
     test_size=0.2, random_state=SEED
 )
 
+
 pca = PCA(n_components=9)
 
 pca.fit(X_train)
