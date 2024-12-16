@@ -91,54 +91,18 @@ C3_dist = multivariate_normal(C3_mean, C3_cov)  # type: ignore
 
 # input_set = X_val
 
-evaluation = 0
-for i in range(X_val.shape[0]):
-    # for i in range(10):
 
-    # bayes_class = 0
+ours = np.stack(
+    (
+        C0_dist.pdf(X_val) * C0_prior, C1_dist.pdf(X_val) * C1_prior,
+        C2_dist.pdf(X_val) * C2_prior, C3_dist.pdf(X_val) * C3_prior
+    ), axis=1
+)
+ours /= ours.sum(axis=1, keepdims=True)
 
-    # max_val = C0_dist.pdf(input_set[i])*C0_prior
+target = np.zeros_like(ours)
+target[np.arange(y_val.shape[0]), y_val] = 1.0
 
-    # temp = C1_dist.pdf(input_set[i])*C1_prior
+evaluation = np.sum(np.abs(ours-target))
 
-    # if temp > max_val:
-    #     temp = max_val
-    #     bayes_class = 1
-
-    # temp = C2_dist.pdf(input_set[i])*C2_prior
-
-    # if temp > max_val:
-    #     temp = max_val
-    #     bayes_class = 2
-
-    # temp = C3_dist.pdf(input_set[i])*C3_prior
-
-    # if temp > max_val:
-    #     temp = max_val
-    #     bayes_class = 3
-
-    factor = (
-        C0_dist.pdf(X_val[i]) * C0_prior +
-        C1_dist.pdf(X_val[i]) * C1_prior +
-        C2_dist.pdf(X_val[i]) * C2_prior +
-        C3_dist.pdf(X_val[i]) * C3_prior
-    )
-
-    our_list = np.array(
-        [
-            C0_dist.pdf(X_val[i]) * C0_prior / factor,
-            C1_dist.pdf(X_val[i]) * C1_prior / factor,
-            C2_dist.pdf(X_val[i]) * C2_prior / factor,
-            C3_dist.pdf(X_val[i]) * C3_prior / factor
-        ]
-    )
-
-    val_list = np.zeros((1, 4))
-    val_list[0, y_val[i]] = 1
-
-    # print(np.abs(our_list-val_list))
-
-    evaluation += np.sum(np.abs(our_list-val_list))
-
-    # print(f"Bayes' classifier choose C{bayes_class} \nProbability tuple{Probability_tuple}")
 print(evaluation)
