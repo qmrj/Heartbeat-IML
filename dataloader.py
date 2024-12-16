@@ -52,7 +52,7 @@ def save_results(path: str, probs: NDArray[Any], y_gt: NDArray[Any]) -> None:
     df = pd.concat([idx_df, probs_df], axis=1)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     df.to_csv(path, index=False, encoding='utf-8')
-    print(f"Results has been saved to `{path}`")
+    print(f"Results have been saved to `{path}`")
 
 
 if __name__ == '__main__':
