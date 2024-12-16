@@ -3,6 +3,7 @@ from scipy.stats import multivariate_normal
 from sklearn.decomposition import PCA
 
 from dataloader import load_train_val_set
+from metrics import print_metrics
 
 from utils import seed_everything
 
@@ -56,9 +57,5 @@ ours = np.stack(
 )
 ours /= ours.sum(axis=1, keepdims=True)
 
-target = np.zeros_like(ours)
-target[np.arange(y_val.shape[0]), y_val] = 1.0
 
-evaluation = np.sum(np.abs(ours-target))
-
-print(evaluation)
+print_metrics(ours, y_val)
