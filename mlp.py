@@ -44,14 +44,8 @@ print_metrics(ours_val, y_val)
 
 # X_test, idx_test = load_test_set()
 
-# X_test = pca.transform(X_test)
+# # X_test = pca.transform(X_test)
 
-# ours_test = np.stack(
-#     (
-#         C0_dist.pdf(X_test) * C0_prior, C1_dist.pdf(X_test) * C1_prior,
-#         C2_dist.pdf(X_test) * C2_prior, C3_dist.pdf(X_test) * C3_prior
-#     ), axis=1
-# )
-# ours_test /= ours_test.sum(axis=1, keepdims=True)
+# ours_test = mlp.predict_proba(X_test)
 
 # save_results('./results/mlp.csv', ours_test, idx_test)

@@ -22,7 +22,7 @@ X_train, X_val, y_train, y_val = load_train_val_set(
 # X_train = pca.transform(X_train)
 # X_val = pca.transform(X_val)
 
-knn = KNeighborsClassifier(n_neighbors=5)
+knn = KNeighborsClassifier(n_neighbors=3)
 
 knn.fit(X_train, y_train)
 
@@ -36,14 +36,8 @@ print_metrics(ours_val, y_val)
 
 # X_test, idx_test = load_test_set()
 
-# X_test = pca.transform(X_test)
+# # X_test = pca.transform(X_test)
 
-# ours_test = np.stack(
-#     (
-#         C0_dist.pdf(X_test) * C0_prior, C1_dist.pdf(X_test) * C1_prior,
-#         C2_dist.pdf(X_test) * C2_prior, C3_dist.pdf(X_test) * C3_prior
-#     ), axis=1
-# )
-# ours_test /= ours_test.sum(axis=1, keepdims=True)
+# ours_test = knn.predict_proba(X_test)
 
 # save_results('./results/knn.csv', ours_test, idx_test)
