@@ -1,6 +1,7 @@
+from sklearn.utils import shuffle
 import numpy as np
 from sklearn.decomposition import PCA
-from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
 
 from dataloader import load_train_val_set, load_test_set, save_results
 from metrics import print_metrics
@@ -15,27 +16,28 @@ X_train, X_val, y_train, y_val = load_train_val_set(
     test_size=0.2, random_state=SEED
 )
 
-# pca = PCA(n_components=64)
+# X_train, y_train = shuffle(X_train, y_train, random_state=SEED)
+
+# X_train = X_train[:10000]
+# y_train = y_train[:10000]
+
+# pca = PCA(n_components=50)
 
 # pca.fit(X_train)
 
 # X_train = pca.transform(X_train)
 # X_val = pca.transform(X_val)
 
-mlp = MLPClassifier(
-    hidden_layer_sizes=(128, 64, 16),
-    max_iter=100,
+svm = SVC(
+    probability=True,
     random_state=SEED,
-    verbose=True,
-    learning_rate_init=0.001,
-    early_stopping=True,
-    batch_size=200
+    verbose=True
 )
 
-mlp.fit(X_train, y_train)
+svm.fit(X_train, y_train)
 
 
-ours_val = mlp.predict_proba(X_val)
+ours_val = svm.predict_proba(X_val)
 
 
 print("Metrics on the validation set:")
@@ -54,4 +56,4 @@ print_metrics(ours_val, y_val)
 # )
 # ours_test /= ours_test.sum(axis=1, keepdims=True)
 
-# save_results('./results/mlp.csv', ours_test, idx_test)
+# save_results('./results/svm.csv', ours_test, idx_test)
