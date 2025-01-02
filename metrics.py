@@ -15,7 +15,7 @@ def get_tianchi_metric(probs: NDArray[Any], y_gt: NDArray[Any]) -> float:
 def get_report(probs: NDArray[Any], y_gt: NDArray[Any], **kwargs):
     assert probs.shape[0] == y_gt.shape[0]
     y_pred = np.argmax(probs, axis=1)
-    return classification_report(y_gt, y_pred, **kwargs)
+    return classification_report(y_gt, y_pred, **kwargs,digits=4)
 
 
 def print_metrics(probs: NDArray[Any], y_gt: NDArray[Any]) -> None:

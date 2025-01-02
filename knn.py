@@ -6,7 +6,7 @@ from dataloader import load_train_val_set, load_test_set, save_results
 from metrics import print_metrics
 
 from utils import seed_everything
-
+import time
 
 SEED = 42
 seed_everything(SEED)
@@ -15,20 +15,24 @@ X_train, X_val, y_train, y_val = load_train_val_set(
     test_size=0.2, random_state=SEED
 )
 
-# pca = PCA(n_components=9)
+pca = PCA(n_components=9)
 
-# pca.fit(X_train)
+pca.fit(X_train)
 
-# X_train = pca.transform(X_train)
-# X_val = pca.transform(X_val)
-
+X_train = pca.transform(X_train)
+X_val = pca.transform(X_val)
+time_0=time.time()
 knn = KNeighborsClassifier(n_neighbors=3)
 
 knn.fit(X_train, y_train)
 
+time_1=time.time()
+
 
 ours_val = knn.predict_proba(X_val)
+time_2=time.time()
 
+print(f"training time:{time_1-time_0}\n validation time:{time_2-time_1}")
 
 print("Metrics on the validation set:")
 print_metrics(ours_val, y_val)
